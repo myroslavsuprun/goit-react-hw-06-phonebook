@@ -1,26 +1,70 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
-import React, { lazy } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { SharedLayout } from 'components';
+import AddContactForm from './AddContactForm/AddContactForm';
+import Section from './Section/Section';
+import ContactsList from './ContactsList/ContactsList';
+import ContactsFilter from './ContactsFilter/ContactsFilter';
 
-const Movies = lazy(() => import('../pages/Movies/Movies'));
-const Home = lazy(() => import('../pages/Home/Home'));
-const MovieDetails = lazy(() => import('./MovieDetails/MovieDetails'));
-const Cast = lazy(() => import('./Cast/Cast'));
-const Reviews = lazy(() => import('./Reviews/Reviews'));
-
-export const App = () => {
-  return (
-    <Routes>
-      <Route path="/" element={<SharedLayout />}>
-        <Route path="movies" element={<Movies />} />
-        <Route path="movies/:movieId" element={<MovieDetails />}>
-          <Route path="cast" element={<Cast />} />
-          <Route path="reviews" element={<Reviews />} />
-        </Route>
-        <Route index element={<Home />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
+function App() {
+  const [contacts, setContacts] = useState(
+    JSON.parse(localStorage.getItem('contacts')) || []
   );
-};
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
+
+  function onContactAddition(contact) {
+    const foundContact = contacts.find(contactFromState => {
+      const currentContact = contactFromState.name.toLowerCase();
+      return currentContact === contact.name.toLowerCase();
+    });
+
+    if (foundContact) {
+      return alert(`${contact.name} is already in contacts`);
+    }
+
+    setContacts([...contacts, contact]);
+  }
+
+  function onFilterChange(newSearchQuery) {
+    setSearchQuery(newSearchQuery);
+  }
+
+  function onContactDelete(contactName) {
+    const newContacts = contacts.filter(contact => {
+      if (contactName === contact.name) return false;
+
+      return true;
+    });
+
+    setContacts(newContacts);
+  }
+
+  function getFilteredContacts() {
+    return contacts.filter(contact => {
+      const contactName = contact.name.toLowerCase();
+      return contactName.includes(searchQuery.toLowerCase());
+    });
+  }
+
+  const filteredContacts = getFilteredContacts();
+
+  return (
+    <>
+      <Section title="Phonebook">
+        <AddContactForm onSubmit={onContactAddition} />
+      </Section>
+      <Section title="Contacts">
+        <ContactsFilter onFilterChange={onFilterChange} />
+        <ContactsList
+          onDeleteClick={onContactDelete}
+          contacts={filteredContacts}
+        />
+      </Section>
+    </>
+  );
+}
+
+export default App;
