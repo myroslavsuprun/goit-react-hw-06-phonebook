@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { nanoid } from 'nanoid';
+import { useDispatch } from 'react-redux';
 
-import PropTypes from 'prop-types';
+import { addContact } from 'redux/contactsSlice';
 
 import {
   AddContactWrapper,
@@ -15,28 +16,31 @@ const INITIAL_STATE = {
   name: '',
   number: '',
 };
+
 const nameInputId = nanoid();
 const numberInputId = nanoid();
 
 function AddContactForm({ onSubmit }) {
   const [name, setName] = useState(INITIAL_STATE.name);
   const [number, setNumber] = useState(INITIAL_STATE.number);
+  const dispatch = useDispatch();
 
   const handleSubmit = e => {
     e.preventDefault();
-    onSubmit({ name, number });
+    dispatch(addContact({ name, number }));
+
     reset();
   };
 
   const handleChange = e => {
-    const { name: targetName, value: targetValue } = e.target;
+    const { name: inputName, value: inputValue } = e.target;
 
-    switch (targetName) {
+    switch (inputName) {
       case 'name':
-        setName(targetValue);
+        setName(inputValue);
         break;
       case 'number':
-        setNumber(targetValue);
+        setNumber(inputValue);
         break;
       default:
         return;
@@ -84,9 +88,5 @@ function AddContactForm({ onSubmit }) {
     </AddContactWrapper>
   );
 }
-
-AddContactForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};
 
 export default AddContactForm;

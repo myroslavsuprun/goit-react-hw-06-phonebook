@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 
-export const ContactsListTag = styled.ul`
+export const ContactsListStyled = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 4px;

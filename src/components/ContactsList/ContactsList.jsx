@@ -1,37 +1,37 @@
-import React, { Component } from 'react';
-import { nanoid } from 'nanoid';
+import React from 'react';
 import PropTypes from 'prop-types';
+import { removeContact } from 'redux/contactsSlice';
+import { useDispatch } from 'react-redux';
 
 import {
-  ContactsListTag,
+  ContactsListStyled,
   ContactsItem,
   ContactsButton,
 } from './ContactsList.styled';
 
-class ContactsList extends Component {
-  handleDeleteClick = contactName => {
-    this.props.onDeleteClick(contactName);
+const ContactsList = ({ contactsList }) => {
+  const dispatch = useDispatch();
+
+  const onDeleteBtnClick = id => {
+    dispatch(removeContact(id));
   };
 
-  render() {
-    let { contacts } = this.props;
+  const mapCallback = ({ name, number, id }) => (
+    <ContactsItem key={id}>
+      {name} {number}
+      <ContactsButton onClick={() => onDeleteBtnClick(id)}>
+        Delete
+      </ContactsButton>
+    </ContactsItem>
+  );
 
-    const mapCallback = contact => (
-      <ContactsItem key={nanoid()}>
-        {contact.name} {contact.number}
-        <ContactsButton onClick={e => this.handleDeleteClick(contact.name)}>
-          Delete
-        </ContactsButton>
-      </ContactsItem>
-    );
-
-    return <ContactsListTag>{contacts.map(mapCallback)}</ContactsListTag>;
-  }
-}
+  return (
+    <ContactsListStyled>{contactsList.map(mapCallback)}</ContactsListStyled>
+  );
+};
 
 ContactsList.propTypes = {
-  contacts: PropTypes.array.isRequired,
-  onDeleteClick: PropTypes.func.isRequired,
+  contactsList: PropTypes.array.isRequired,
 };
 
 export default ContactsList;

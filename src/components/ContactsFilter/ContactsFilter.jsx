@@ -1,15 +1,21 @@
 import React from 'react';
 import { nanoid } from 'nanoid';
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
+
+import { getFilter } from 'redux/selectors';
+import { updateFilter } from 'redux/filterSlice';
 
 import { FormLabel, FormInput } from './ContactsFilter.styled';
 
 const filterInputId = nanoid();
 
-const ContactsFilter = ({ onFilterChange, filter }) => {
-  const handleChange = e => {
+const ContactsFilter = () => {
+  const filter = useSelector(getFilter);
+  const dispatch = useDispatch();
+
+  const onInputChange = e => {
     let currentValue = e.target.value;
-    onFilterChange(currentValue);
+    dispatch(updateFilter(currentValue));
   };
 
   return (
@@ -20,15 +26,10 @@ const ContactsFilter = ({ onFilterChange, filter }) => {
         type="text"
         name="filter"
         id={filterInputId}
-        onChange={handleChange}
+        onChange={onInputChange}
       />
     </FormLabel>
   );
-};
-
-ContactsFilter.propTypes = {
-  onFilterChange: PropTypes.func.isRequired,
-  filter: PropTypes.array,
 };
 
 export default ContactsFilter;
