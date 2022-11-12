@@ -9,23 +9,9 @@ export const contactsSlice = createSlice({
   name: 'contacts',
   initialState: contactsInitialState,
   reducers: {
-    // Accepts a payload with contact name and number
-    // We add an id in prepare function;
-    // Then we reduce our state with the new contact.
     addContact: {
       reducer(state, action) {
         const { contactsList } = state;
-        const { name } = action.payload;
-
-        const foundContact = contactsList.find(contactFromState => {
-          const contactNameFromState = contactFromState.name.toLowerCase();
-          return contactNameFromState === name.toLowerCase();
-        });
-
-        if (foundContact) {
-          return alert(`${name} is already in contacts`);
-        }
-
         contactsList.push(action.payload);
       },
 
